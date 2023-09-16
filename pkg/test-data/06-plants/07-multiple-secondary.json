@@ -1,0 +1,22 @@
+{
+  "name": "Tulip",
+  "botanical_name": "Tulipa",
+  "sunlight_needs": [
+    "Full Sun",
+    "Partial Shade"
+  ],
+  "categories": [
+    "Flowering",
+    "Bulb"
+  ],
+  "special_features": [
+    {
+      "feature": "fragrant",
+      "description": "Smells like a cactus"
+    },
+    {
+      "feature": "edible",
+      "description": "Don't eat it"
+    }
+  ]
+}

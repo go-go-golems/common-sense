@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+cd pkg
+
+for i in test-data/*yaml; do
+    echo $i
+    echo
+    cat $i
+done

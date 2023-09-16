@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+oak go definitions --recurse pkg/schema.go
+
+cat pkg/doc/schema-example.md
+
+oak go definitions --recurse pkg/layout.go
+

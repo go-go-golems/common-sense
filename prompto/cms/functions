@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+echo "package pkg"
+echo
+oak go definitions pkg/schema.go
+
+echo "package sqlite"
+echo
+oak go definitions pkg/sqlite/types.go
+oak go definitions pkg/sqlite/create.go
+oak go definitions pkg/sqlite/get.go
+oak go definitions pkg/sqlite/insert.go
+oak go definitions pkg/sqlite/update.go
+oak go definitions pkg/sqlite/delete.go
+

@@ -1,0 +1,86 @@
+# This represents the layout of a form to edit plant objects.
+# A layout is separated in sections, which then has rows.
+# Each actual editing element is represented as an input.
+# Inputs have name, type, target. 
+# List fields have a parent-table, as they are stored in different tables and joined through an id/parent_id.
+# The target is the name of a table followed by the name of a field.
+layout:
+  - section:
+      title: Basic Plant Info
+      rows:
+        - inputs:
+            - name: botanical_name
+              type: text-input
+              label: Botanical Name
+              target: plant.botanical_name
+            - name: common_name
+              type: text-input
+              label: Command Name
+              target: plant.common_name
+
+        - inputs:
+            - name: phylogenetic_class
+              type: text-input
+            - name: phylogenetic_order
+              type: text-input
+
+        ...
+
+  - section:
+      title: Description
+      rows:
+        - inputs:
+            - name: interest_to_the_customer
+              type: textarea
+              label: Interest of the plant to the customer
+              tooltip: This field is only used as a placeholder to get better information generated.
+              target: plant.interest_to_the_customer
+            - name: overview_paragraph
+              type: textarea
+              label: An overview paragraph about the plant
+              target: plant.detailed_description
+      ...
+
+  - section:
+      title: Plant Size
+      rows:
+        - inputs:
+            - name: age
+              type: integer-input
+              target plant.age
+
+            - name: mature_height
+              type: integer-range
+              target: plant.mature_height
+
+    ...
+
+  - section:
+      title: Ecommerce Categories
+      has-add-remove: true
+      parent-table: plant
+      target: ecommerce_categories.category
+      rows:
+        - inputs:
+            - name: category
+              type: editable-list
+  - section:
+      title: Positive Traits
+      has-add-remove: true
+      parent-table: plant
+      target: positive_traits.trait
+      rows:
+        - inputs:
+            - name: trait
+              type: editable-list
+    ...
+  - section:
+      title: USA Growing Locations
+      has-add-remove: true
+      parent-table: plant
+      target: USA_growingLocations.location
+      rows:
+        - inputs:
+            - name: location
+              type: editable-list
+

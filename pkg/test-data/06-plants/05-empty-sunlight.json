@@ -1,0 +1,20 @@
+{
+  "name": "Coxmosis",
+  "botanical_name": "Coxmosis Cactaceae",
+  "rating": 4,
+  "sunlight_needs": [],
+  "categories": [
+    "Succulent",
+    "Desert"
+  ],
+  "special_features": [
+    {
+      "feature": "fragrant",
+      "description": "Smells like a cactus"
+    },
+    {
+      "feature": "poisonous",
+      "description": "Don't eat it!"
+    }
+  ]
+}

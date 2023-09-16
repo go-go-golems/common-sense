@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+oak go definitions --recurse pkg/schema.go
+oak go definitions --recurse pkg/sqlite
+

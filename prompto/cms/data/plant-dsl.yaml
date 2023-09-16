@@ -1,0 +1,140 @@
+# This is the main table that represents the plant object
+#
+#plant:
+  help: This table represents a plant object in the CMS
+  fields:
+    - name: botanical_name
+      type: string
+      help: The botanical name of the plant
+    - name: common_name
+      type: string
+      help: The common name of the plant
+    - name: phylogenetic_division
+      type: string
+      help: The phylogenetic division of the plant
+    - name: phylogenetic_class
+      type: string
+      help: The phylogenetic class of the plant
+    - name: phylogenetic_order
+      type: string
+      help: The phylogenetic order of the plant
+    - name: phylogenetic_family
+      type: string
+      help: The phylogenetic family of the plant
+    - name: phylogenetic_genus
+      type: string
+      help: The phylogenetic genus of the plant
+    - name: species
+      type: string
+      help: The species of the plant
+    - name: interest_to_the_customer
+      type: string
+      help: The interest of the plant to the customer
+    - name: overview_paragraph
+      type: string
+      help: An overview paragraph about the plant
+    - name: detailed_paragraph
+      type: string
+      help: A detailed paragraph about the plant
+    - name: sunlight
+      type: choice
+      choices: [_full Sun, Partial Sun, Partial Shade, Filtered Sun, Full Shade, Bright Indirect Light, Medium Indirect Light, Low Light]
+      help: The sunlight needs of the plant
+    - name: sunlight_description
+      type: string
+      help: A description of the sunlight needs of the plant
+    - name: water_description
+      type: string
+      help: A description of the water needs of the plant
+    - name: fertilizing_description
+      type: string
+      help: A description of the fertilizing needs of the plant
+    - name: growth_rateDescription
+      type: string
+      help: A description of the growth rate of the plant
+    - name: age
+      type: int
+      min: 0
+      max: 10
+      unit: years
+      help: The year of the plant
+    - name: mature_height
+      type: intRange
+      min: 2
+      max: 40
+      unit: feet
+      help: The mature height of the plant (min, max) in feet
+    - name: mature_width
+      type: intRange
+      min: 2
+      max: 20
+      unit: feet
+      help: The mature width of the plant (min, max) in feet
+    - name: growth_rate
+      type: choice
+      choices: [_slow, Moderate, Fast]
+      help: The growth rate of the plant
+    - name: growing_zones
+      type: intRange
+      min: 2
+      max: 11
+      help: The growing zones of the plant
+
+# These are the tables that represent the nested structures in the plant object
+ecommerce_categories:
+  help: This table represents the ecommerce categories of a plant
+  is-list: true
+  value-field:
+    name: category
+    type: string
+    help: The ecommerce category
+
+positive_traits:
+  help: This table represents the positive traits of a plant
+  is-list: true
+  value-field:
+    name: trait
+    type: string
+    help: The positive trait
+
+interesting_facts:
+  help: This table represents the interesting facts about a plant
+  is-list: true
+  value-field:
+    name: fact
+    type: string
+    help: The interesting fact
+
+water_needs:
+  help: This table represents the water needs of a plant
+  value-field:
+    name: need
+    type: choice
+    choices: [_low, Moderate, High]
+    help: The water need
+
+fertilizing:
+  help: This table represents the fertilizing needs of a plant
+  value-field:
+    - name: need
+      type: choice
+      choices: [_low, Moderate, High]
+      help: The fertilizing need
+
+special_features:
+  help: This table represents the special features of a plant
+  is-list: true
+  value-field:
+    name: feature
+    type: choice
+    choices: [Attractive Bark, Attracts Butterflies, Bird Friendly, Cold Hardy, Deer Resistant, Disease Resistant, Drought Resistant, Dwarf Variety, Easy Care, Edible, Fast Growing, Fall Color, Fragrant, Ornamental Berries, Pet Friendly, Pest Resistant, Pollinator Friendly, Shade Loving, Spring Color, Summer Color, Tolerates Acidic Soil, Tolerates Alkaline Soil, Tolerates Wet Soil, Water Wise, Winter Color]
+    help: The special feature
+
+USA_growingLocations:
+  help: This table represents the USA growing locations of a plant
+  is-list: true
+  value-field:
+    name: location
+    type: string
+    help: The USA growing location
+

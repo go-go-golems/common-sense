@@ -1,0 +1,11 @@
+     {
+       "name": "Spirellatus",
+       "botanical_name": "Spirellatus Cactaceae",
+       "rating": 3,
+       "sunlight_needs": ["Full Sun"],
+       "categories": ["Succulent", "Desert"],
+       "special_features": [
+         { "feature":  "fragrant", "description":  "Smells like a cactus" },
+         { "feature":  "edible", "description":  "Don't eat it"}
+       ]
+     }
