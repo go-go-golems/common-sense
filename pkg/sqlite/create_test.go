@@ -2,7 +2,7 @@ package sqlite
 
 import (
 	"github.com/go-go-golems/common-sense/pkg"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
@@ -41,7 +41,7 @@ func TestGenerateSQLiteCreateTable(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Read the test data
-			data, err := ioutil.ReadFile(tt.filePath)
+			data, err := os.ReadFile(tt.filePath)
 			require.NoError(t, err)
 
 			// Parse the schema
