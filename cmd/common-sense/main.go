@@ -159,7 +159,7 @@ func loadSchema(file string) (*pkg.Schema, error) {
 
 	var schema pkg.Schema
 	if err := yaml.Unmarshal(data, &schema); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal schema: %w", err)
+		return nil, errors.Wrap(err, "failed to unmarshal schema")
 	}
 
 	return &schema, nil
@@ -168,13 +168,13 @@ func loadSchema(file string) (*pkg.Schema, error) {
 func openDBAndLoadSchema(database, schemaFile string) (*sqlx.DB, *pkg.Schema, error) {
 	db, err := sqlx.Open("sqlite3", database)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to open database: %w", err)
+		return nil, nil, errors.Wrap(err, "failed to open database")
 	}
 
 	schema, err := loadSchema(schemaFile)
 	if err != nil {
 		_ = db.Close()
-		return nil, nil, fmt.Errorf("failed to load schema: %w", err)
+		return nil, nil, errors.Wrap(err, "failed to load schema")
 	}
 
 	return db, schema, nil
@@ -183,12 +183,12 @@ func openDBAndLoadSchema(database, schemaFile string) (*sqlx.DB, *pkg.Schema, er
 func loadJSON(filename string) (map[string]interface{}, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read file: %w", err)
+		return nil, errors.Wrap(err, "failed to read file")
 	}
 
 	var result map[string]interface{}
 	if err := json.Unmarshal(data, &result); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal JSON: %w", err)
+		return nil, errors.Wrap(err, "failed to unmarshal JSON")
 	}
 
 	return result, nil
