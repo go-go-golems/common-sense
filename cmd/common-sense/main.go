@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/go-go-golems/common-sense/pkg"
 	sqlite2 "github.com/go-go-golems/common-sense/pkg/sqlite"
+	"github.com/pkg/errors"
 	"log"
 	"os"
 	"strconv"
@@ -153,7 +154,7 @@ func main() {
 func loadSchema(file string) (*pkg.Schema, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read schema file: %w", err)
+		return nil, errors.Wrapf(err, "failed to read schema file")
 	}
 
 	var schema pkg.Schema

@@ -29,7 +29,7 @@ func generateSQLiteList(queryData QueryData) (string, error) {
 	if listObjectsParsedTemplate == nil {
 		tmpl, err := template.New("query").Parse(listObjectsTpl)
 		if err != nil {
-			return "", fmt.Errorf("parse template: %w", err)
+			return "", errors.Wrapf(err, "parse template")
 		}
 		listObjectsParsedTemplate = tmpl
 	}
@@ -37,7 +37,7 @@ func generateSQLiteList(queryData QueryData) (string, error) {
 	queryBuilder := &strings.Builder{}
 	err := listObjectsParsedTemplate.Execute(queryBuilder, queryData)
 	if err != nil {
-		return "", fmt.Errorf("execute template: %w", err)
+		return "", errors.Wrapf(err, "execute template")
 	}
 
 	query := queryBuilder.String()
@@ -47,7 +47,7 @@ func generateSQLiteList(queryData QueryData) (string, error) {
 func GenerateSQLiteListObjectsMainTable(schema *pkg.Schema, limit, offset int) (string, error) {
 	mainTable, ok := schema.Tables[schema.MainTable]
 	if !ok {
-		return "", fmt.Errorf("main table %q not found in schema", schema.MainTable)
+		return "", errors.Errorf("main table %q not found in schema", schema.MainTable)
 	}
 
 	queryData := QueryData{
@@ -68,7 +68,7 @@ func generateSQLiteListSecondary(queryData QueryData, ids []int64) (string, erro
 	if listObjectsSecondaryParsedTemplate == nil {
 		tmpl, err := template.New("query").Parse(listObjectsSecondaryTpl)
 		if err != nil {
-			return "", fmt.Errorf("parse template: %w", err)
+			return "", errors.Wrapf(err, "parse template")
 		}
 		listObjectsSecondaryParsedTemplate = tmpl
 	}
@@ -76,7 +76,7 @@ func generateSQLiteListSecondary(queryData QueryData, ids []int64) (string, erro
 	queryBuilder := &strings.Builder{}
 	err := listObjectsSecondaryParsedTemplate.Execute(queryBuilder, queryData)
 	if err != nil {
-		return "", fmt.Errorf("execute template: %w", err)
+		return "", errors.Wrapf(err, "execute template")
 	}
 
 	query := queryBuilder.String()
@@ -128,7 +128,7 @@ func ListObjects(
 ) (*PaginationResponse, error) {
 	tx, err := db.BeginTxx(ctx, nil)
 	if err != nil {
-		return nil, fmt.Errorf("begin tx: %w", err)
+		return nil, errors.Wrap(err, "begin tx")
 	}
 
 	defer func(tx *sqlx.Tx) {
@@ -138,12 +138,12 @@ func ListObjects(
 
 	query, err := GenerateSQLiteListObjectsMainTable(schema, paginationRequest.Limit, paginationRequest.Offset)
 	if err != nil {
-		return nil, fmt.Errorf("generate query: %w", err)
+		return nil, errors.Wrap(err, "generate query")
 	}
 
 	rows, err := tx.QueryxContext(ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("query: %w", err)
+		return nil, errors.Wrap(err, "query")
 	}
 	defer func(rows *sqlx.Rows) {
 		_ = rows.Close()
@@ -155,17 +155,17 @@ func ListObjects(
 		result := make(map[string]interface{})
 		err := rows.MapScan(result)
 		if err != nil {
-			return nil, fmt.Errorf("scan: %w", err)
+			return nil, errors.Wrap(err, "scan")
 		}
 		id, ok := result["id"].(int64)
 		if !ok {
-			return nil, fmt.Errorf("id is not an int64")
+			return nil, errors.Wrap(err, "id is not an int64")
 		}
 		ids = append(ids, id)
 		results[id] = result
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows: %w", err)
+		return nil, errors.Wrap(err, "rows")
 	}
 
 	if len(ids) == 0 {
@@ -183,12 +183,12 @@ func ListObjects(
 
 		query, err := GenerateSQLiteListObjectsSecondaryTable(schema, tableName, ids)
 		if err != nil {
-			return nil, fmt.Errorf("generate query: %w", err)
+			return nil, errors.Wrap(err, "generate query")
 		}
 
 		rows, err := tx.QueryxContext(ctx, query)
 		if err != nil {
-			return nil, fmt.Errorf("query: %w", err)
+			return nil, errors.Wrap(err, "query")
 		}
 		defer func(rows *sqlx.Rows) {
 			_ = rows.Close()
@@ -198,17 +198,17 @@ func ListObjects(
 			result := make(map[string]interface{})
 			err := rows.MapScan(result)
 			if err != nil {
-				return nil, fmt.Errorf("scan: %w", err)
+				return nil, errors.Wrap(err, "scan")
 			}
 
 			parentId, ok := result["parent_id"].(int64)
 			if !ok {
-				return nil, fmt.Errorf("parent id is not an int64")
+				return nil, errors.Wrap(err, "parent id is not an int64")
 			}
 
 			v, ok := results[parentId]
 			if !ok {
-				return nil, fmt.Errorf("parent id %d not found", parentId)
+				return nil, errors.Errorf("parent id %d not found", parentId)
 			}
 
 			if table.IsList {
@@ -217,7 +217,7 @@ func ListObjects(
 					results_ := map[string]interface{}{}
 					err := rows.MapScan(results_)
 					if err != nil {
-						return nil, fmt.Errorf("scan: %w", err)
+						return nil, errors.Wrap(err, "scan")
 					}
 					additionalResults = append(additionalResults, results_[table.ValueField.Name])
 				}
@@ -228,14 +228,14 @@ func ListObjects(
 					result := map[string]interface{}{}
 					err := rows.MapScan(result)
 					if err != nil {
-						return nil, fmt.Errorf("scan: %w", err)
+						return nil, errors.Wrap(err, "scan")
 					}
 					delete(result, "id")
 					delete(result, "parent_id")
 					additionalResults = append(additionalResults, result)
 				}
 				if err := rows.Err(); err != nil {
-					return nil, fmt.Errorf("rows: %w", err)
+					return nil, errors.Wrap(err, "rows")
 				}
 
 				v[tableName] = additionalResults
@@ -249,7 +249,7 @@ func ListObjects(
 			}
 		}
 		if err := rows.Err(); err != nil {
-			return nil, fmt.Errorf("rows: %w", err)
+			return nil, errors.Wrap(err, "rows")
 		}
 	}
 

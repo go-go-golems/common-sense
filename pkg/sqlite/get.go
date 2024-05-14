@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-go-golems/common-sense/pkg"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -29,7 +28,7 @@ func generateSQLiteGet(queryData QueryData) (string, error) {
 	if getObjectParsedTemplate == nil {
 		tmpl, err := template.New("query").Parse(getObjectTpl)
 		if err != nil {
-			return "", fmt.Errorf("parse template: %w", err)
+			return "", errors.Wrapf(err, "parse template")
 		}
 		getObjectParsedTemplate = tmpl
 	}
@@ -37,7 +36,7 @@ func generateSQLiteGet(queryData QueryData) (string, error) {
 	queryBuilder := &strings.Builder{}
 	err := getObjectParsedTemplate.Execute(queryBuilder, queryData)
 	if err != nil {
-		return "", fmt.Errorf("execute template: %w", err)
+		return "", errors.Wrapf(err, "execute template")
 	}
 
 	query := queryBuilder.String()
@@ -48,7 +47,7 @@ func generateSQLiteGet(queryData QueryData) (string, error) {
 func GenerateSQLiteGetObjectMainTable(schema *pkg.Schema) (string, error) {
 	mainTable, ok := schema.Tables[schema.MainTable]
 	if !ok {
-		return "", fmt.Errorf("main table %q not found in schema", schema.MainTable)
+		return "", errors.Errorf("main table %q not found in schema", schema.MainTable)
 	}
 
 	queryData := QueryData{
@@ -93,7 +92,7 @@ func GetObject(
 ) (map[string]interface{}, error) {
 	tx, err := db.BeginTxx(ctx, nil)
 	if err != nil {
-		return nil, fmt.Errorf("begin tx: %w", err)
+		return nil, errors.Wrapf(err, "begin tx")
 	}
 
 	defer func(tx *sqlx.Tx) {
@@ -103,12 +102,12 @@ func GetObject(
 
 	query, err := GenerateSQLiteGetObjectMainTable(schema)
 	if err != nil {
-		return nil, fmt.Errorf("generate query: %w", err)
+		return nil, errors.Wrapf(err, "generate query")
 	}
 
 	rows, err := tx.QueryxContext(ctx, query, id)
 	if err != nil {
-		return nil, fmt.Errorf("query: %w", err)
+		return nil, errors.Wrapf(err, "query")
 	}
 	defer func(rows *sqlx.Rows) {
 		_ = rows.Close()
@@ -119,14 +118,14 @@ func GetObject(
 		result := map[string]interface{}{}
 		err := rows.MapScan(result)
 		if err != nil {
-			return nil, fmt.Errorf("scan: %w", err)
+			return nil, errors.Wrapf(err, "scan")
 		}
 		for k, v := range result {
 			results[k] = v
 		}
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows: %w", err)
+		return nil, errors.Wrapf(err, "rows")
 	}
 
 	// Query additional tables
@@ -137,12 +136,12 @@ func GetObject(
 
 		query, err = GenerateSQLiteGetObjectSecondaryTable(schema, tableName)
 		if err != nil {
-			return nil, fmt.Errorf("generate query: %w", err)
+			return nil, errors.Wrapf(err, "generate query")
 		}
 
 		rows, err := tx.QueryxContext(ctx, query, id)
 		if err != nil {
-			return nil, fmt.Errorf("query: %w", err)
+			return nil, errors.Wrapf(err, "query")
 		}
 		defer func(rows *sqlx.Rows) {
 			_ = rows.Close()
@@ -154,12 +153,12 @@ func GetObject(
 				results := map[string]interface{}{}
 				err := rows.MapScan(results)
 				if err != nil {
-					return nil, fmt.Errorf("scan: %w", err)
+					return nil, errors.Wrapf(err, "scan")
 				}
 				additionalResults = append(additionalResults, results[table.ValueField.Name])
 			}
 			if err := rows.Err(); err != nil {
-				return nil, fmt.Errorf("rows: %w", err)
+				return nil, errors.Wrapf(err, "rows")
 			}
 
 			results[tableName] = additionalResults
@@ -169,14 +168,14 @@ func GetObject(
 				result := map[string]interface{}{}
 				err := rows.MapScan(result)
 				if err != nil {
-					return nil, fmt.Errorf("scan: %w", err)
+					return nil, errors.Wrapf(err, "scan")
 				}
 				delete(result, "id")
 				delete(result, "parent_id")
 				additionalResults = append(additionalResults, result)
 			}
 			if err := rows.Err(); err != nil {
-				return nil, fmt.Errorf("rows: %w", err)
+				return nil, errors.Wrapf(err, "rows")
 			}
 
 			results[tableName] = additionalResults
